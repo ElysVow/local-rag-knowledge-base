@@ -149,7 +149,7 @@
   function appendMessage(role, htmlNode) {
     const wrap = el("div", "msg " + role);
     const body = el("div", "msg-body");
-    body.appendChild(htmlNode);
+    if (htmlNode) body.appendChild(htmlNode);
     wrap.appendChild(body);
     els.messages.appendChild(wrap);
     els.messages.scrollTop = els.messages.scrollHeight;
