@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>本地大模型知识库</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="layout">
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">KB</div>
+        <div>
+          <div class="brand-title">本地知识库</div>
+          <div class="brand-sub">Local RAG · Llama3 / Qwen</div>
+        </div>
+      </div>
+
+      <!-- 上传 -->
+      <div class="section">
+        <div class="section-title">添加文档</div>
+        <div id="dropzone" class="dropzone">
+          <div class="dz-icon">📄</div>
+          <div class="dz-text">拖拽文件到这里，或点击选择</div>
+          <div class="dz-hint">支持 txt / md / pdf / docx，单文件 ≤ 50MB</div>
+          <input type="file" id="file-input" accept=".txt,.md,.markdown,.pdf,.docx" hidden>
+        </div>
+        <button id="btn-samples" class="btn btn-ghost">载入示例文档</button>
+        <div id="upload-status" class="upload-status"></div>
+      </div>
+
+      <!-- 文档列表 -->
+      <div class="section grow">
+        <div class="section-title">已入库文档 <span id="doc-count" class="badge">0</span></div>
+        <ul id="doc-list" class="doc-list"></ul>
+        <div id="doc-empty" class="empty">暂无文档，先上传几份试试</div>
+      </div>
+
+      <!-- 设置 -->
+      <div class="section">
+        <div class="section-title">检索设置</div>
+        <label class="setting-row">
+          <span>Top-K 片段 <em id="topk-val">4</em></span>
+          <input type="range" id="topk" min="1" max="10" value="4">
+        </label>
+        <label class="setting-row">
+          <span>相似度阈值 <em id="thr-val">0.30</em></span>
+          <input type="range" id="threshold" min="0" max="0.8" step="0.05" value="0.30">
+        </label>
+        <div class="setting-info">
+          <div>模型：<span id="cfg-model">-</span></div>
+          <div>向量模型：<span id="cfg-embed">-</span></div>
+        </div>
+        <button id="btn-clear" class="btn btn-danger">清空知识库</button>
+      </div>
+    </aside>
+
+    <!-- 主区域 -->
+    <main class="main">
+      <header class="chat-header">
+        <div class="chat-title">文档问答</div>
+        <div id="status" class="status">
+          <span class="dot"></span><span id="status-text">连接中…</span>
+        </div>
+      </header>
+
+      <div id="messages" class="messages"></div>
+
+      <div class="input-area">
+        <textarea id="question" rows="1" placeholder="输入问题，回车发送（Shift+Enter 换行）"></textarea>
+        <button id="send" class="btn btn-primary">发送</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

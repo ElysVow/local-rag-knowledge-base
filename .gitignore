@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# 运行时数据（上传的文档与向量索引）
+data/*
+!data/.gitkeep
+
+# 模型缓存（如 HF 默认目录）
+.cache/
+
+# IDE / 系统
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# 测试产物
+.pytest_cache/
