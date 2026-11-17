@@ -220,9 +220,9 @@ pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-覆盖：文件名清洗与中文文件名、文本切分、向量库删除（含删除最后一个文档）、
-索引持久化恢复。原来的 `tests/test_pipeline.py` 是手动冒烟脚本，仍可用
-`python tests/test_pipeline.py` 运行（首次运行需下载向量模型约 100MB）。
+覆盖：文件名清洗与中文文件名、文本切分、向量库删除（含删除最后一个文档）。
+原来的 `tests/test_pipeline.py` 是手动冒烟脚本，仍可用
+`python tests/test_pipeline.py` 运行；它会走完整管线并验证索引持久化（首次运行需下载向量模型约 100MB）。
 
 ## ❓ 常见问题
 
