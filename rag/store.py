@@ -119,10 +119,9 @@ class VectorStore:
         dim = self.index.d
         new_index = faiss.IndexFlatIP(dim)
         rows = {i for i, m in enumerate(self.meta) if m.get("doc_id") == doc_id}
-        if dim > 0:
-            vectors = np.vstack(
-                [self.index.reconstruct(int(i)) for i in range(self.count) if i not in rows]
-            )
+        kept_rows = [i for i in range(self.count) if i not in rows]
+        if dim > 0 and kept_rows:
+            vectors = np.vstack([self.index.reconstruct(int(i)) for i in kept_rows])
             if vectors.shape[0]:
                 new_index.add(vectors)
         self.index = new_index

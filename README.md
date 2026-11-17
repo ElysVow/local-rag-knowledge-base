@@ -1,5 +1,8 @@
 # 本地大模型知识库（Local RAG Knowledge Base）
 
+> **历史原型说明**：这是早期 Flask + FAISS 实现，保留作为学习与对照。
+> 功能更完整、界面更现代的版本请见 [LocalDocQA](https://github.com/ElysVow/LocalDocQA)。
+
 > 基于 **Llama3 / Qwen 等本地大模型** + RAG（检索增强生成）的文档问答系统。
 > 文档全部保存在本地，问答全程离线，网页版界面开箱即用。
 
@@ -108,7 +111,7 @@ ollama pull qwen2.5:7b        # 中文效果好，通用推荐（约 4.5GB）
 ### 3. 安装 Python 依赖
 
 ```bash
-git clone https://github.com/<你的用户名>/local-rag-knowledge-base.git
+git clone https://github.com/ElysVow/local-rag-knowledge-base.git
 cd local-rag-knowledge-base
 
 # 建议使用虚拟环境（可选但推荐）
@@ -178,6 +181,7 @@ local-rag-knowledge-base/
 ├── config.py               # 全局配置（支持环境变量覆盖）
 ├── rag/                    # 核心 RAG 管线
 │   ├── loader.py           #   文档加载（txt/md/pdf/docx → 文本）
+│   ├── uploads.py          #   上传文件名清洗与扩展名校验
 │   ├── chunker.py          #   文本切分（按段落 + 重叠）
 │   ├── embeddings.py       #   向量化（sentence-transformers）
 │   ├── store.py            #   向量库（FAISS + 元数据持久化）
@@ -212,11 +216,12 @@ local-rag-knowledge-base/
 ## 🧪 测试
 
 ```bash
-python tests/test_pipeline.py
+python -m pytest -q
 ```
 
-覆盖：文档加载 → 切分 → 向量化 → 入库 → 检索命中率 → 索引持久化恢复。
-（首次运行需下载向量模型约 100MB）
+覆盖：文件名清洗与中文文件名、文本切分、向量库删除（含删除最后一个文档）、
+索引持久化恢复。原来的 `tests/test_pipeline.py` 是手动冒烟脚本，仍可用
+`python tests/test_pipeline.py` 运行（首次运行需下载向量模型约 100MB）。
 
 ## ❓ 常见问题
 

@@ -8,7 +8,6 @@ from __future__ import annotations
 import threading
 
 from flask import Flask, jsonify, render_template, request
-from werkzeug.utils import secure_filename
 
 import config
 from rag.chunker import chunk_text
@@ -17,6 +16,7 @@ from rag.llm import OllamaClient
 from rag.loader import load_document
 from rag.pipeline import RAGPipeline
 from rag.store import VectorStore, new_doc_id
+from rag.uploads import validate_upload_name
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 单文件最大 50MB
@@ -54,22 +54,24 @@ def upload():
     if file is None or not file.filename:
         return jsonify({"error": "未选择文件"}), 400
 
-    filename = secure_filename(file.filename)
-    ext = "." + (filename.rsplit(".", 1)[-1] if "." in filename else "").lower()
-    if ext not in config.ALLOWED_EXTENSIONS:
-        return jsonify({"error": f"不支持的文件类型 {ext}，支持：{sorted(config.ALLOWED_EXTENSIONS)}"}), 400
+    try:
+        filename, ext = validate_upload_name(file.filename)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
 
-    save_path = config.UPLOAD_DIR / filename
-    file.save(str(save_path))
+    doc_id = new_doc_id()
+    # 用 doc_id 生成唯一存储名，避免中文文件名被 secure_filename 洗掉扩展名，
+    # 也避免两个同名文件互相覆盖。界面展示仍使用原始文件名。
+    save_path = config.UPLOAD_DIR / f"{doc_id}{ext}"
 
     try:
+        file.save(str(save_path))
         _, text = load_document(save_path)
         chunks = chunk_text(text)
         if not chunks:
             return jsonify({"error": "文档内容为空，无法入库"}), 400
 
         with store_lock:
-            doc_id = new_doc_id()
             vectors = embedder.encode(chunks)
             added = store.add_chunks(doc_id, filename, chunks, vectors)
 
@@ -82,6 +84,7 @@ def upload():
             }
         )
     except Exception as exc:
+        save_path.unlink(missing_ok=True)
         return jsonify({"error": f"入库失败：{exc}"}), 500
 
 
