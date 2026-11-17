@@ -216,6 +216,7 @@ local-rag-knowledge-base/
 ## 🧪 测试
 
 ```bash
+pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
